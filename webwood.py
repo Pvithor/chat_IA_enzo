@@ -1,5 +1,4 @@
 import requests 
-import os
 from time import sleep
 import streamlit as st
 
