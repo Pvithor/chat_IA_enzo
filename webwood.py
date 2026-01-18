@@ -3,7 +3,6 @@ import os
 from time import sleep
 import streamlit as st
 
-# webhook_token = os.getenv("TOKEN_WEBHOOK")
 url = f"https://discord.com/api/webhooks/{st.secrets['TOKEN_WEBHOOK']}"
 
 def main(msg):
