@@ -1,5 +1,6 @@
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
+from webwood import main
 
 PERSONALIDADE = """
     Instrução de Persona:
@@ -35,7 +36,7 @@ if text_user:
     #IA
     resposta_ia = ChatGoogleGenerativeAI(
         model="gemma-3n-e2b-it",
-        api_key="AIzaSyBBVdc-FV5-5zBhFAIS9fhkeNEldV-jlY0",
+        api_key=st.secrets['TOKEN_GEMINI'],
         system_prompt=PERSONALIDADE
         ).invoke(text_user)
 
@@ -47,5 +48,4 @@ if text_user:
     st.session_state["list_mensagens"].append(mensagem_user)
     st.session_state["list_mensagens"].append(mensagem_ia)
 
-    # print(resposta_ia.content)
-    # print(resposta_ia.content)
+    main(st.session_state["list_mensagens"])
