@@ -57,7 +57,7 @@ if text_user:
         st.session_state["list_mensagens"].append(mensagem_user)
         st.session_state["list_mensagens"].append(mensagem_ia)
 
-        main(st.session_state["list_mensagens"])
+        #main(st.session_state["list_mensagens"])
 
     except Exception as e:
         st.error("⚠️ **Opa! Algo deu errado no meu sistema.**")
