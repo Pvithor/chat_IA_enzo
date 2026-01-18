@@ -1,5 +1,6 @@
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import HumanMessage, SystemMessage
 from webwood import main
 
 PERSONALIDADE = """
@@ -24,6 +25,7 @@ st.write("# Chat com IA")
 
 if not "list_mensagens" in st.session_state:
     st.session_state['list_mensagens'] = []
+
 for mensagem in st.session_state['list_mensagens']:
     if not mensagem["role"] == "system":
         st.chat_message(mensagem["role"]).write(mensagem["content"])
@@ -34,18 +36,54 @@ if text_user:
     mensagem_user = {"role": "user", "content": text_user}
 
     #IA
-    resposta_ia = ChatGoogleGenerativeAI(
-        model="gemma-3n-e2b-it",
-        api_key=st.secrets['TOKEN_GEMINI'],
-        system_prompt=PERSONALIDADE
-        ).invoke(text_user)
+    try:
+        model = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash", 
+            api_key=st.secrets['TOKEN_GEMINI'],
+            temperature=0.7
+        )
 
+        # Criando a estrutura de mensagens correta
+        mensagens = [
+            SystemMessage(content=PERSONALIDADE),
+            HumanMessage(content=text_user)
+        ]
 
-    txt_ia = resposta_ia.content
-    st.chat_message("assistant").write(txt_ia) 
-    mensagem_ia = {"role": "assistant", "content": txt_ia}
+        resposta_ia = model.invoke(mensagens)
+        txt_ia = resposta_ia.content
+        
+        st.chat_message("assistant").write(txt_ia) 
+        mensagem_ia = {"role": "assistant", "content": txt_ia}
 
-    st.session_state["list_mensagens"].append(mensagem_user)
-    st.session_state["list_mensagens"].append(mensagem_ia)
+        st.session_state["list_mensagens"].append(mensagem_user)
+        st.session_state["list_mensagens"].append(mensagem_ia)
 
-    main(st.session_state["list_mensagens"])
+        main(st.session_state["list_mensagens"])
+
+    except Exception as e:
+        st.error("⚠️ **Opa! Algo deu errado no meu sistema.**")
+        
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            st.markdown("""
+                Não se preocupe, isso pode ser um problema técnico temporário ou na chave do servidor.
+                
+                **O que você pode fazer?**
+                * Tente atualizar a página.
+                * Se o erro persistir, avise o dono do site.
+            """)
+            
+            # Botão de contato elegante via Markdown
+            st.markdown(
+                """
+                <h3> Erro entra em contato com o criador e tire a print, vamos ver se ele da uma olhada  </h3>
+                """, 
+                unsafe_allow_html=True
+            )
+
+        with col2:
+            # Mostra o erro técnico de forma discreta
+            with st.expander("Ver detalhes técnicos (Log)"):
+                st.code(str(e), language="text")
+
+    
