@@ -1,2 +1,5 @@
 streamlit
 langchain_google_genai
+requests 
+os
+time
